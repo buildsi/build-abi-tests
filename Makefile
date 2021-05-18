@@ -1,24 +1,24 @@
-CXXFLAGS=-g
+# My standard compiler flags
+CXXFLAGS=-g3 -fvar-tracking-assignments -gstatement-frontiers \
+	-gvariable-location-views -grecord-gcc-switches -pipe -Wall \
+	-Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
+	-Wp,-D_GLIBCXX_ASSERTIONS -fstack-protector-strong \
+	-fstack-clash-protection -fcf-protection \
+	-fasynchronous-unwind-tables -O2
+LDFLAGS=-Wl,--no-undefined
 
-all: app1 libt1.so libt2.so
+all: underlinktest libunderlink1.so libunderlink2.so
 
-app1: app1.o libt1.so
-	g++ $(CXXFLAGS) -o app1 app1.o -L. -l t1
+underlinktest: underlinktest.o libunderlink1.so
+	g++ $(CXXFLAGS) $(LDFLAGS) -o underlinktest underlinktest.o -L. -l underlink1
 
-app1.o:
-	g++ $(CXXFLAGS) -o app1.o -c app1.C
+# We don't want the LDFLAGS here because this library is intentionally
+# underlinked
+libunderlink1.so: libunderlink1.o
+	g++ $(CXXFLAGS) -fPIC -shared -o libunderlink1.so libunderlink1.o
 
-libt1.so: lib1.o
-	g++ $(CXXFLAGS) -fPIC -shared -o libt1.so lib1.o
-
-lib1.o: lib1.C
-	g++ $(CXXFLAGS) -o lib1.o -c lib1.C
-
-libt2.so: lib2.o
-	g++ $(CXXFLAGS) -fPIC -shared -o libt2.so lib2.o
-
-lib2.o: lib2.C
-	g++ $(CXXFLAGS) -o lib2.o -c lib2.C
+libunderlink2.so: libunderlink2.o
+	g++ $(CXXFLAGS) -fPIC -shared -o libunderlink2.so libunderlink2.o
 
 clean:
-	rm -f *~ *.o *.so app1
+	rm -f *~ *.o *.so underlinktest
