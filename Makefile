@@ -1,4 +1,4 @@
-# My standard compiler flags
+# Ben's standard compiler flags
 CXXFLAGS=-g3 -fvar-tracking-assignments -gstatement-frontiers \
 	-gvariable-location-views -grecord-gcc-switches -pipe -Wall \
 	-Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions \
@@ -6,6 +6,8 @@ CXXFLAGS=-g3 -fvar-tracking-assignments -gstatement-frontiers \
 	-fstack-clash-protection -fcf-protection \
 	-fasynchronous-unwind-tables -O2
 LDFLAGS=-Wl,--no-undefined
+
+.PHONY: all clean test abicompat-underlink abicompat-backcall
 
 all: underlinktest libunderlink1.so libunderlink2.so
 
@@ -19,6 +21,14 @@ libunderlink1.so: libunderlink1.o
 
 libunderlink2.so: libunderlink2.o
 	g++ $(CXXFLAGS) -fPIC -shared -o libunderlink2.so libunderlink2.o
+
+test: abicompat-underlink abicompat-backcall
+
+abicompat-underlink: libunderlink1.so
+	@./abicompat-underlink.sh
+
+abicompat-backcall: underlinktest libunderlink1.so libunderlink2.so
+	@./abicompat-backcall.sh
 
 clean:
 	rm -f *~ *.o *.so underlinktest
