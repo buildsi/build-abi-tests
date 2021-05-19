@@ -1,6 +1,18 @@
 This is a repo of little tests and snippets which I wrote to test particular
 Features of abi compatibility programs like libabigail.
 
+# Tools
+## swap-libs-audit
+
+This is a very simple ld_audit library that looks for a environment
+variable called SWAP_LIB_FILENAME that points to a file which has a
+list of libraries that should be replaced. The file format is
+extremely simple each line should have the name of a library and the
+one that should replace it.
+
+The point of this utility is to allow a user to actually test false
+positives and false negatives and see what happens when you run them.
+
 # Tests
 ## libabigail sees all undefined symbols
 ```
@@ -36,4 +48,10 @@ The problem is that ABI compatibility needs to be verified both ways. Not
 just calls from the application to the library but calls from the library back
 to the main application.
 
+### swap-underlink
 
+Swapping the two underlink libraries demonstrations that the ABI
+compatibility that abicompat professed is in fact a false positive.
+It shows that the two libraries are in fact not ABI compatible due the
+fact that their return value is not the same size. This causes the the
+stack to become corrupted.

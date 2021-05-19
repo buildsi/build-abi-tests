@@ -13,10 +13,19 @@ CFLAGS=-g3 -fvar-tracking-assignments -gstatement-frontiers \
 	-fasynchronous-unwind-tables -O2
 LDFLAGS=-Wl,--no-undefined
 
-.PHONY: all clean test run-underlinktest abicompat-underlink abicompat-backcall
+.PHONY: all clean test run-underlinktest abicompat-underlink abicompat-backcall \
+	swap-underlinked
 
-all: underlinktest libunderlink1.so libunderlink2.so
+# ------
+all: underlinktest libunderlink1.so libunderlink2.so swap-libs-audit.so
 
+swap-libs-audit.so: swap-libs-audit.o
+	g++ $(CXXFLAGS) $(LDFLAGS) -fPIC -shared -o swap-libs-audit.so swap-libs-audit.o
+
+swap-libs-audit.o: swap-libs-audit.C
+	g++ $(CXXFLAGS) -fPIC -c -o swap-libs-audit.o swap-libs-audit.C
+
+# ------ Underlinking ------
 underlinktest: underlinktest.o libunderlink1.so
 	gcc $(CFLAGS) $(LDFLAGS) -o underlinktest underlinktest.o -L. -l underlink1
 
@@ -28,7 +37,8 @@ libunderlink1.so: libunderlink1.o
 libunderlink2.so: libunderlink2.o
 	gcc $(CFLAGS) -fPIC -shared -o libunderlink2.so libunderlink2.o
 
-test: run-underlinktest abicompat-underlink abicompat-backcall
+# ------ TESTS ------
+test: run-underlinktest abicompat-underlink abicompat-backcall swap-underlinked
 
 run-underlinktest: underlinktest
 	@./underlinktest.sh
@@ -39,5 +49,10 @@ abicompat-underlink: libunderlink1.so
 abicompat-backcall: underlinktest libunderlink1.so libunderlink2.so
 	@./abicompat-backcall.sh
 
+swap-underlinked: underlinktest libunderlink1.so libunderlink2.so \
+		swap-libs-audit.so
+	@./swap-underlinked.sh
+
+# ------ Other ------
 clean:
 	rm -f *~ *.o *.so underlinktest
