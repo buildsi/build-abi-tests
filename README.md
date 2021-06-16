@@ -14,6 +14,59 @@ The point of this utility is to allow a user to actually test false
 positives and false negatives and see what happens when you run them.
 
 # Tests
+## libabigail consistency tests
+
+To be able to throw away the binary and be able to use the ABIXML as
+the representation of th ABI, it has to be an accurate representation
+of the binary's ABI.  By comparing the file to the ABIXML generated
+from itself, we can see if anything has changed. Libabigail has one
+such identity test which has found many problems over the years.
+
+```
+$ abidw --abidiff
+```
+
+Any change represents a problem with the internal reprentation of the
+ABI. A new element means that something has not been captured or
+wasn't saved. A deleted element means that something new was found. A
+change means that somewhere between the reading of the information and
+the saving of it, something was not captured faithfully. Even harmless
+changes while theoretically harmless do represent that the infomration
+was not faithfully captured.
+
+There are several scripts which run tests against all installed
+binaries in a specified directory. They use flux to schedule these
+tests and so flux must be running. Several of the tests require
+substantial amounts of memory and so if overcommitting processors is
+not reccomended unless the machine has a lot of memory. libabigail
+cannot do much without DWARF information. So either the debuginfo
+packages must be installed or they must be accessible through
+debuginfod. To run these tests on fedora I do:
+```
+$ DEBUGINFOD_PROGRESS=1
+$ DEBUGINFOD_URLS=https://debuginfod.fedoraproject.org
+$ flux start -s 2
+$ scripts/abidw-abidiff.sh /usr/lib64
+```
+
+This can also be run on other directories such as a spack
+directory. Currently, this test is only run on actual files (not
+symlinks) that match the "*.so.*".
+
+When that test run is done, then all the failing cases can be
+collected using:
+
+```
+$ scripts/abidw-gen-bts.sh
+```
+
+In most cases all the `*.out` files can be ignored and
+deleted. `scripts/abidw-kinds-of-fails.sh` goes through the backtraces
+and tries to sort them. Of course asserts and crashes are
+important. Hopefully all of those can be resolved. Then any
+consistency errors will need to be worked through for this test to
+work.
+
 ## libabigail sees all undefined symbols
 ```
 $ abicompat -u libunderlink1.so
