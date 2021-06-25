@@ -37,6 +37,24 @@ libunderlink1.so: libunderlink1.o
 libunderlink2.so: libunderlink2.o
 	gcc $(CFLAGS) -fPIC -shared -o libunderlink2.so libunderlink2.o
 
+# ------ rtti-exception -----
+use-rtti-excep: use-rtti-excep.o librttiexcep_v1.so
+	g++ $(CFLAGS) $(LDFLAGS) -o use-rtti-excep -L. -l rttiexcep_v1 use-rtti-excep.o
+
+use-rtti-excep.o: use-rtti-excep.C rtti-exception.h
+
+librttiexcep_v1.so: rtti-v1.o
+	g++ $(CXXFLAGS) $(LDFLAGS) -fPIC -shared -o librttiexcep_v1.so rtti-v1.o
+
+librttiexcep_v2.so: rtti-v2.o
+	g++ $(CXXFLAGS) $(LDFLAGS) -fPIC -shared -o librttiexcep_v2.so rtti-v2.o
+
+rtti-v1.o: rtti-exception.C  rtti-exception.h
+	g++ $(CXXFLAGS) -fPIC -c -o rtti-v1.o -DVER_1 rtti-exception.C
+
+rtti-v2.o: rtti-exception.C  rtti-exception.h
+	g++ $(CXXFLAGS) -fPIC -c -o rtti-v2.o -DVER_2 rtti-exception.C
+
 # ------ TESTS ------
 test: run-underlinktest abicompat-underlink abicompat-backcall swap-underlinked
 
