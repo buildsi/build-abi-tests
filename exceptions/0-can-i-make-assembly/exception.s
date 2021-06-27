@@ -263,21 +263,9 @@ _Z19catch_the_exceptionv.cold:
 .LHOTE2:
 	.section	.text.startup,"ax",@progbits
 	.p2align 4
-	.globl	main
-	.type	main, @function
-main:
-.LFB1599:
-	.cfi_startproc
-	endbr64
-	xorl	%eax, %eax
-	ret
-	.cfi_endproc
-.LFE1599:
-	.size	main, .-main
-	.p2align 4
 	.type	_GLOBAL__sub_I__Z19throw_the_exceptionb, @function
 _GLOBAL__sub_I__Z19throw_the_exceptionb:
-.LFB2088:
+.LFB2087:
 	.cfi_startproc
 	endbr64
 	subq	$8, %rsp
@@ -291,7 +279,7 @@ _GLOBAL__sub_I__Z19throw_the_exceptionb:
 	leaq	_ZStL8__ioinit(%rip), %rsi
 	jmp	__cxa_atexit@PLT
 	.cfi_endproc
-.LFE2088:
+.LFE2087:
 	.size	_GLOBAL__sub_I__Z19throw_the_exceptionb, .-_GLOBAL__sub_I__Z19throw_the_exceptionb
 	.section	.init_array,"aw"
 	.align 8
