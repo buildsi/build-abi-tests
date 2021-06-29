@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo -n "abicompat backcall "
-abicompat underlinktest libunderlink1.so libunderlink2.so
+abicompat ../tests/underlinktest ../tests/libunderlink1.so ../tests/libunderlink2.so
 if [ $? == 0 ];then
     echo FAIL
 else
