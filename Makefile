@@ -10,6 +10,7 @@ $(SUBDIRS):
 # currently only libabigail is tested when smeagol is ready
 # test that too
 test:
+	$(MAKE) -C tests test
 	$(MAKE) -C libabigail test
 
 clean:

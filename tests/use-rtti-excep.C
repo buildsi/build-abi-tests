@@ -4,12 +4,16 @@
 
 #include "rtti-exception.h"
 
+#define RESULT 3
+
 int main( int argc, char **argv){
   try{
-    do_something( 3);
+    do_something( RESULT-2);
   }
-  catch( ex &excep){
+  catch( LongExceptionName &excep){
     std::cout << "caught " << excep.num << std::endl;
+    if(excep.num != RESULT)
+      return 1;
   }
   return 0;
 }

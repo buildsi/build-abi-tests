@@ -2,6 +2,8 @@
 
 This is a small repository of tests for ABI.
 
+ - [tools](tools): tools useful for performing tests
+ - [tests](tests): boiled down reproducers demonstrating subtle ABI breaks
  - [libabigail](libabigail): includes tests by @woodard relevant to libabigail.
  - [exceptions](exceptions): is a playing area for looking at exceptions.
  - [examples](examples): includes subfolders of broken ABI issues we've found in the wild.

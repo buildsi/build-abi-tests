@@ -1,18 +1,6 @@
 This is a repo of little tests and snippets which I wrote to test particular
 Features of abi compatibility programs like libabigail.
 
-# Tools
-## swap-libs-audit
-
-This is a very simple ld_audit library that looks for a environment
-variable called SWAP_LIB_FILENAME that points to a file which has a
-list of libraries that should be replaced. The file format is
-extremely simple each line should have the name of a library and the
-one that should replace it.
-
-The point of this utility is to allow a user to actually test false
-positives and false negatives and see what happens when you run them.
-
 # Tests
 ## libabigail consistency tests
 
@@ -81,9 +69,9 @@ The problem is that underlinked symbols are not considered by libabigail.
 
 ## abicompat overlooks backcalls
 
-the main() calls libcall which is in the underlinked libraries and has
+The main() calls libcall which is in the underlinked libraries and has
 the same API and ABI but the libraries call a function back in the
-main app and which has a different ABI therefore the libraries are not
+app and which has a different ABI therefore the libraries are not
 compatible and libabigail fails to detect this. In the case of
 libunderlink1.C the function is `char *backcall( char *arg);` but in
 libunderlink2.C the function is `int backcall( char *arg);` In this
@@ -101,10 +89,22 @@ The problem is that ABI compatibility needs to be verified both ways. Not
 just calls from the application to the library but calls from the library back
 to the main application.
 
-### swap-underlink
+## libabigail overlooks exceptions
 
-Swapping the two underlink libraries demonstrations that the ABI
-compatibility that abicompat professed is in fact a false positive.
-It shows that the two libraries are in fact not ABI compatible due the
-fact that their return value is not the same size. This causes the the
-stack to become corrupted.
+Libabigail doesn't parse the LSDA pointed to by the GNU_EH_FRAME program header
+and therefore doesn't note that the library throws a type which may be caught
+beyond the library boundary. Therefore it is part of the ABI for the library.
+Instead libabigail considers the type of the exception which is thrown to be a
+private class which it doesn't bother comparing. Libabigail should point out
+this difference.
+
+```
+$ abidiff ../tests/librttiexcep_v1.so ../tests/librttiexcep_v2.so
+$ echo $?
+0
+$
+```
+
+Once it can pass that test then the abicompat-exception test will become more
+relevant. We only need to ensure that types that are used by the application
+are considered when doing an abicompat check.
