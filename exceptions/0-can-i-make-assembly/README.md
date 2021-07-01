@@ -1,8 +1,11 @@
 # Exceptions
 
 This is a small bit of code to see if it's possible to see what a compiler can
-dump in terms of assembly. Knowing nothing, I know that `__cxx_throw` seems to
-be a thing, as is `__gxx_personality_v0`. First I compiled:
+dump in terms of assembly, and then walking through the code with gdb to try to understand questions.
+
+## 1. Looking for personality and cxx_throw
+
+Knowing nothing, I know that `__cxx_throw` seems to be a thing, as is `__gxx_personality_v0`. First I compiled:
 
 ```bash
 $ make
@@ -368,3 +371,6 @@ Some random thoughts:
 
 1. I probably need to get familiar with how to read assembly. What are all the .L sections, and then the same with numbers at the end?
 2. The [personality](https://stackoverflow.com/questions/329059/what-is-gxx-personality-v0-for) reference (I think called a "Personality Routine" seems to have a lot of [parameters](https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html#base-personality) that would probably need to match for two things to be compatible.
+
+
+

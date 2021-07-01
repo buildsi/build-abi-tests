@@ -1,3 +1,2 @@
 all:
-	g++ -W -Wall -O3 -save-temps -c exception.cpp
-
+	g++ -g -W -Wall -save-temps -c exception.cpp
