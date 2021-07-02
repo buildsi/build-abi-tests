@@ -41,3 +41,15 @@ int main() {
     catch_the_exception();
     return 0;
 }
+
+// gdb ./program
+// list --> shows source code
+// break line number |function | file:number
+// r --> runs (add command line params here)
+// c --> continue
+// disass
+
+// Dinosaur exception has two different layouts
+// look at first param of __cxa_allocate_exception (that's the 1!)
+// how does the throw pass to the catch block.
+// gdb tutorial
