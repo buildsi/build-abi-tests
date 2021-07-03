@@ -1,16 +1,16 @@
 #ifdef VER_1
-class ex {
+class LongExceptionName {
 public:
   int num;
-  ex( int n):num(n){}
+  LongExceptionName( int n):num(n){}
 };
 #endif
 
 #ifdef VER_2
-class ex {
+class LongExceptionName {
   float num;
 public:
-  ex( int n):num(n){}
+  LongExceptionName( int n):num(n){}
 };
 #endif
 

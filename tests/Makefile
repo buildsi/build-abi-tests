@@ -13,7 +13,9 @@ CFLAGS=-g3 -fvar-tracking-assignments -gstatement-frontiers \
 	-fasynchronous-unwind-tables -O2
 LDFLAGS=-Wl,--no-undefined
 
-.PHONY: clean all
+TESTS=underlinked swap-underlinked exception swap-exception
+
+.PHONY: clean all test $(TESTS)
 
 # ------
 all: underlinktest libunderlink1.so libunderlink2.so use-rtti-excep librttiexcep_v2.so
@@ -47,6 +49,23 @@ rtti-v1.o: rtti-exception.C  rtti-exception.h
 
 rtti-v2.o: rtti-exception.C  rtti-exception.h
 	g++ $(CXXFLAGS) -fPIC -c -o rtti-v2.o -DVER_2 rtti-exception.C
+
+# ------ TESTS ------
+test: $(TESTS)
+
+# -- underlink tests
+underlinked: underlinktest libunderlink1.so 
+	@./underlinktest.sh
+
+swap-underlinked: underlinktest libunderlink2.so ../tools/swap-libs-audit.so
+	@./swap-underlinked.sh
+
+# -- exception tests
+exception: use-rtti-excep librttiexcep_v1.so
+	@./exceptiontest.sh
+
+swap-exception: use-rtti-excep librttiexcep_v2.so ../tools/swap-libs-audit.so
+	@./swap-exceptiontest.sh
 
 # ----- Other -----
 clean:
