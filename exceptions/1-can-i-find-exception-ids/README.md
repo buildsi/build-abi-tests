@@ -305,6 +305,8 @@ Dump of assembler code for function catch_the_exception():
    0x000055555555538f <+112>:	callq  0x5555555550e0 <__cxa_begin_catch@plt>
 ```
 
+## readelf
+
 From Ben, we can try these commands to see the exception type tables:
 
 ```
