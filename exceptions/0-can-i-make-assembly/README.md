@@ -1,9 +1,9 @@
 # Exceptions
 
 This is a small bit of code to see if it's possible to see what a compiler can
-dump in terms of assembly, and then walking through the code with gdb to try to understand questions.
+dump in terms of assembly, and then walking through the code with gdb to try to answer questions.
 
-## 1. Looking for personality and cxx_throw
+## 1. Test Case 1: One Exception
 
 Knowing nothing, I know that `__cxx_throw` seems to be a thing, as is `__gxx_personality_v0`. First I compiled:
 
@@ -238,8 +238,6 @@ I'm breaking it here because the gcc_except_table is what we want to look at. Th
 	.uleb128 .LLSDACSE1598-.LLSDACSB1598		# Regions (call-site) table length - it means we go from the
 							# start to the end of the next chunk (see addresses)
 
-Each Call-sites Table entry has the following values: start offset, length, exception or cleanup handler offset (or 0 if there isn’t one) and action. Action is an offset + 1 to the Action Record Table or 0 if there are no exceptions to catch.
-
 
 # This is the call site table
 .LLSDACSB1598:
@@ -424,6 +422,8 @@ DW.ref.__gxx_personality_v0:
 4:
 ```
 
+## 2. Test Case 2: Multiple Exceptions
+
 Just to show the Action Table when there are THREE exceptions:
 
 ```
@@ -444,7 +444,219 @@ Just to show the Action Table when there are THREE exceptions:
 ```
 
 
-Questions:
+## 2. Test Case 3: Linked Exception
+
+I gave my best shot at defining a main client library, and a library of exceptions it uses.
+This uses [use-dinosaur.cpp](use-dinosaur.cpp) and the [libdinosaur.hpp](libdinosaur.hpp)
+(which would need to be linked). Here is the relevant table section, with comments.
+
+# This region describes call sites
+.LLSDATTD1598:
+	.byte	0x1					# Region (call-site) offsets format (DW_EH_PE_uleb128)
+	.uleb128 .LLSDACSE1598-.LLSDACSB1598		# Regions (call-site) table length - it means we go from the
+							# start to the end of the next chunk (see addresses)
+
+
+```
+.LFE1531:
+	.globl	__gxx_personality_v0
+	.section	.gcc_except_table,"a",@progbits
+	.align 4
+.LLSDA1531:
+	.byte	0xff				# lp_format
+	.byte	0x9b				# tt_format
+	.uleb128 .LLSDATT1531-.LLSDATTD1531	# offset to the end of the @TType table
+
+# This region describes call sites
+.LLSDATTD1531:
+	.byte	0x1				# Region (call-site) offsets format
+	.uleb128 .LLSDACSE1531-.LLSDACSB1531   # Regions (call-site) table length - it means we go from the
+						# start to the end of the next chunk (see addresses)
+
+# This is the call site table
+.LLSDACSB1598:
+	.uleb128 .LEHB0-.LFB1598	# region 0 start offset - this looks like the log, and then before the try block
+	.uleb128 .LEHE0-.LEHB0y	# region 0 length (up to what point to parse it?)
+	.uleb128 0			# region 0 landing pad (exception/cleanup handler offset), 0 means there isn't one
+	.uleb128 0			# region 0 action (is 0 so there are no exceptions to catch)
+
+# This is the call site table
+.LLSDACSB1531:
+	.uleb128 .LEHB0-.LFB1531	# region 0 start offset (before try block)
+	.uleb128 .LEHE0-.LEHB0		# region 0  length (0)
+	.uleb128 0			# region 0 landing pad (0 means not one)
+	.uleb128 0			# region 0 action (0 means no exception to catch)
+	.uleb128 .LEHB1-.LFB1531	# region 1 start offset (in try block)
+	.uleb128 .LEHE1-.LEHB1		# region 1 length
+	.uleb128 .L13-.LFB1531		# region 1 landing pad
+	.uleb128 0x1			# region 1 action
+	.uleb128 .LEHB2-.LFB1531	# region 2 (it looks like it is almost the same as the previous but doesn't include L13?)
+	.uleb128 .LEHE2-.LEHB2		# region 2 length
+	.uleb128 0			# region 2 landing pad
+	.uleb128 0			# region 2 action (not sure why this extra is added?)
+	.uleb128 .LEHB3-.LFB1531	# region 3
+	.uleb128 .LEHE3-.LEHB3
+	.uleb128 .L14-.LFB1531
+	.uleb128 0
+	.uleb128 .LEHB4-.LFB1531	# region 5
+	.uleb128 .LEHE4-.LEHB4
+	.uleb128 0
+	.uleb128 0
+
+# It could be all the extra entries are an artifact of moving around call sites? The only
+# thing we really care about is the action table entry 0x1.
+
+# This is the action tble
+.LLSDACSE1531:
+	.byte	0x1			# filter value to link to call site table above
+	.byte	0			# offset in bytes to next entry
+	.align 4
+	.long	DW.ref._ZTIN8dinosaur17DinosaurExceptionE-.
+
+```
+So it looks like there is more jumping around call sites, but we still only care about
+the exception identifier? Now what about if we dump something for libdinosaur.cpp?
+Okay - so looking in the same file [libdinosaur.s](libdinosaur.s) I see absolutely no reference
+to any exceptions. We don't have the same action table because no exceptions are actually thrown,
+they are just defined. But then if we do:
+
+```bash
+$ eu-readelf -l libdinosaur-v1.so | grep GNU_EH_FRAME
+  GNU_EH_FRAME   0x002004 0x0000000000002004 0x0000000000002004 0x000034 0x000034 R   0x4
+```
+
+GNU_EN_FRAME is:
+
+> Frame unwind information (EH = Exception Handling). This segment is usually the same as .eh_frame_hdr section in ELF's linking view. 
+
+So that's probably where we are supposed to look? I tried this other command, I don't see anything helpful there:
+
+```bash
+$ eu-readelf --debug-dump=frame libdinosaur-v1.so 
+
+Call frame search table section [17] '.eh_frame_hdr':
+ version:          1
+ eh_frame_ptr_enc: 0x1b (sdata4 pcrel)
+ fde_count_enc:    0x3 (udata4)
+ table_enc:        0x3b (sdata4 datarel)
+ eh_frame_ptr:     0x30 (offset: 0x2038)
+ fde_count:        5
+ Table:
+  0xfffff01c (offset: 0x1020) -> 0x4c fde=[    18]
+  0xfffff04c (offset: 0x1050) -> 0x74 fde=[    40]
+  0xfffff05c (offset: 0x1060) -> 0x8c fde=[    58]
+  0xfffff135 (offset: 0x1139) -> 0xa4 fde=[    70]
+  0xfffff182 (offset: 0x1186) -> 0xc4 fde=[    90]
+
+Call frame information section [18] '.eh_frame' at offset 0x2038:
+
+ [     0] CIE length=20
+   CIE_id:                   0
+   version:                  1
+   augmentation:             "zR"
+   code_alignment_factor:    1
+   data_alignment_factor:    -8
+   return_address_register:  16
+   Augmentation data:        0x1b (FDE address encoding: sdata4 pcrel)
+
+   Program:
+     def_cfa r7 (rsp) at offset 8
+     offset r16 (rip) at cfa-8
+     nop
+     nop
+
+ [    18] FDE length=36 cie=[     0]
+   CIE_pointer:              28
+   initial_location:         +0x0000000000001020 (offset: 0x1020)
+   address_range:            0x30 (end offset: 0x1050)
+
+   Program:
+     def_cfa_offset 16
+     advance_loc 6 to 0x1026
+     def_cfa_offset 24
+     advance_loc 10 to 0x1030
+     def_cfa_expression 11
+          [ 0] breg7 8
+          [ 2] breg16 0
+          [ 4] lit15
+          [ 5] and
+          [ 6] lit10
+          [ 7] ge
+          [ 8] lit3
+          [ 9] shl
+          [10] plus
+     nop
+     nop
+     nop
+     nop
+
+ [    40] FDE length=20 cie=[     0]
+   CIE_pointer:              68
+   initial_location:         +0x0000000000001050 (offset: 0x1050)
+   address_range:            0x10 (end offset: 0x1060)
+
+   Program:
+     nop
+     nop
+     nop
+     nop
+     nop
+     nop
+     nop
+
+ [    58] FDE length=20 cie=[     0]
+   CIE_pointer:              92
+   initial_location:         +0x0000000000001060 (offset: 0x1060)
+   address_range:            0x20 (end offset: 0x1080)
+
+   Program:
+     nop
+     nop
+     nop
+     nop
+     nop
+     nop
+     nop
+
+ [    70] FDE length=28 cie=[     0]
+   CIE_pointer:              116
+   initial_location:         +0x0000000000001139 <_Z41__static_initialization_and_destruction_0ii> (offset: 0x1139)
+   address_range:            0x4d (end offset: 0x1186)
+
+   Program:
+     advance_loc 5 to 0x113e
+     def_cfa_offset 16
+     offset r6 (rbp) at cfa-16
+     advance_loc 3 to 0x1141
+     def_cfa_register r6 (rbp)
+     advance_loc1 68 to 0x1185
+     def_cfa r7 (rsp) at offset 8
+     nop
+     nop
+
+ [    90] FDE length=28 cie=[     0]
+   CIE_pointer:              148
+   initial_location:         +0x0000000000001186 <_GLOBAL__sub_I_libdinosaur.cpp> (offset: 0x1186)
+   address_range:            0x19 (end offset: 0x119f)
+
+   Program:
+     advance_loc 5 to 0x118b
+     def_cfa_offset 16
+     offset r6 (rbp) at cfa-16
+     advance_loc 3 to 0x118e
+     def_cfa_register r6 (rbp)
+     advance_loc 16 to 0x119e
+     def_cfa r7 (rsp) at offset 8
+     nop
+     nop
+     nop
+
+ [    b0] Zero terminator
+```
+
+How do we read that GNU_EN_FRAME section, and is that where we see the exception defined?
+
+# Questions:
 
 ## What are unique identifiers?
 
