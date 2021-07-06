@@ -424,6 +424,26 @@ DW.ref.__gxx_personality_v0:
 4:
 ```
 
+Just to show the Action Table when there are THREE exceptions:
+
+```
+.LLSDACSE1543:
+	.byte	0x3		# Filter value of Dinosaur exception (last index in @TTypes table)
+	.byte	0		# offset in bytes (0 because it's the last).
+	.byte	0x2		# Filter value of second (middle index @TTYpes) this is Alligator.
+	.byte	0x7d		# Offset in bytes
+	.byte	0x1		# Filter value of Moose exception (first index in ttypes)
+	.byte	0x7d		# Offset in bytes
+	.align 4
+
+	# These are @TTypes table entries.
+	# Notice how the order here is reversed but corresponds to the Filters values (e.g., Dinosaur is last, filter value 3)
+	.long	DW.ref._ZTI14MooseException-.
+	.long	DW.ref._ZTI18AlligatorException-.
+	.long	DW.ref._ZTI17DinosaurException-.
+```
+
+
 Questions:
 
 ## What are unique identifiers?
