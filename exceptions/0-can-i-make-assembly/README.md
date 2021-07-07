@@ -525,7 +525,7 @@ $ eu-readelf -l libdinosaur-v1.so | grep GNU_EH_FRAME
   GNU_EH_FRAME   0x002004 0x0000000000002004 0x0000000000002004 0x000034 0x000034 R   0x4
 ```
 
-GNU_EN_FRAME is:
+GNU_EH_FRAME is:
 
 > Frame unwind information (EH = Exception Handling). This segment is usually the same as .eh_frame_hdr section in ELF's linking view. 
 
@@ -654,7 +654,7 @@ Call frame information section [18] '.eh_frame' at offset 0x2038:
  [    b0] Zero terminator
 ```
 
-How do we read that GNU_EN_FRAME section, and is that where we see the exception defined?
+How do we read that GNU_EH_FRAME section, and is that where we see the exception defined?
 
 # Questions:
 
