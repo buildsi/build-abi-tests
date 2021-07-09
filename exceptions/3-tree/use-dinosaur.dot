@@ -1,0 +1,181 @@
+digraph G {
+	 subgraph cluster_0 { 
+		 label="targ10d0"; 
+		 color=blue;
+		"10d0" [shape=box]
+		"10d0" [label = "targ10d0\n10d0"];
+		"10d0";
+		"10d4";
+	}
+	"10d0"-> "10d4"
+	"10d4"-> "ffffffffffffffff"
+
+	 subgraph cluster_1 { 
+		 label="throw_the_exception"; 
+		 color=blue;
+		"1269" [shape=box]
+		"1269" [label = "throw_the_exception\n1269"];
+		"1269";
+		"126d";
+		"1281";
+		"128b";
+		"1296";
+		"12ac";
+		"12ad";
+	}
+	"1269"-> "126d"
+	"126d"-> "12ac"
+	"126d"-> "1281"
+	"1281"-> "10f0" [color=blue]
+	"1281"-> "128b"
+	"128b"-> "142c" [color=blue]
+	"128b"-> "1296"
+	"1296"-> "1160" [color=blue]
+	"12ac"-> "12ad"
+	"12ad"-> "134f" [color=green]
+	"12ad"-> "ffffffffffffffff" [color=green]
+
+	 subgraph cluster_2 { 
+		 label="hello_dinosaur"; 
+		 color=blue;
+		"12b4" [shape=box]
+		"12b4" [label = "hello_dinosaur\n12b4"];
+		"12b4";
+		"12b8";
+		"12cf";
+		"12e4";
+		"12e5";
+	}
+	"12b4"-> "12b8"
+	"12b8"-> "1110" [color=blue]
+	"12b8"-> "12cf"
+	"12cf"-> "12e4"
+	"12cf"-> "1120" [color=blue]
+	"12e4"-> "12e5"
+	"12e5"-> "ffffffffffffffff" [color=green]
+	"12e5"-> "1345" [color=green]
+
+	 subgraph cluster_3 { 
+		 label="log"; 
+		 color=blue;
+		"12e7" [shape=box]
+		"12e7" [label = "log\n12e7"];
+		"12e7";
+		"12eb";
+		"1307";
+		"131c";
+		"131d";
+	}
+	"12e7"-> "12eb"
+	"12eb"-> "1130" [color=blue]
+	"12eb"-> "1307"
+	"1307"-> "131c"
+	"1307"-> "1120" [color=blue]
+	"131c"-> "131d"
+	"131d"-> "138d" [color=green]
+	"131d"-> "1340" [color=green]
+	"131d"-> "1336" [color=green]
+	"131d"-> "1359" [color=green]
+	"131d"-> "1363" [color=green]
+	"131d"-> "ffffffffffffffff" [color=green]
+
+	 subgraph cluster_4 { 
+		 label="catch_the_exception"; 
+		 color=blue;
+		"131f" [shape=box]
+		"131f" [label = "catch_the_exception\n131f"];
+		"131f";
+		"1323";
+		"1336";
+		"1340";
+		"1345";
+		"134f";
+		"1359";
+		"1363";
+		"1365";
+		"1369";
+		"136f";
+		"1377";
+		"137f";
+		"138d";
+		"1392";
+		"1394";
+		"1398";
+		"13a0";
+		"13ab";
+	}
+	"131f"-> "1323"
+	"1323"-> "12e7" [color=blue]
+	"1323"-> "1336"
+	"1336"-> "1340"
+	"1336"-> "1365"
+	"1336"-> "12e7" [color=blue]
+	"1340"-> "12b4" [color=blue]
+	"1340"-> "1365"
+	"1340"-> "1345"
+	"1345"-> "134f"
+	"1345"-> "1365"
+	"1345"-> "1269" [color=blue]
+	"134f"-> "1365"
+	"134f"-> "1359"
+	"134f"-> "12e7" [color=blue]
+	"1359"-> "1363"
+	"1359"-> "12e7" [color=blue]
+	"1363"-> "13ab"
+	"1365"-> "1369"
+	"1369"-> "136f"
+	"1369"-> "1377"
+	"136f"-> "1170" [color=blue]
+	"1377"-> "137f"
+	"1377"-> "10e0" [color=blue]
+	"137f"-> "12e7" [color=blue]
+	"137f"-> "1394"
+	"137f"-> "138d"
+	"138d"-> "1150" [color=blue]
+	"138d"-> "1392"
+	"1392"-> "1359"
+	"1394"-> "1398"
+	"1398"-> "13a0"
+	"1398"-> "1150" [color=blue]
+	"13a0"-> "1170" [color=blue]
+	"13ab"-> "ffffffffffffffff" [color=green]
+	"13ab"-> "13bf" [color=green]
+
+	 subgraph cluster_5 { 
+		 label="main"; 
+		 color=blue;
+		"13b2" [shape=box]
+		"13b2" [label = "main\n13b2"];
+		"13b2";
+		"13b6";
+		"13bf";
+	}
+	"13b2"-> "13b6"
+	"13b6"-> "131f" [color=blue]
+	"13b6"-> "13bf"
+	"13bf"-> "ffffffffffffffff" [color=green]
+
+	 subgraph cluster_6 { 
+		 label="dinosaur::DinosaurException::DinosaurException"; 
+		 color=blue;
+		"142c" [shape=box]
+		"142c" [label = "dinosaur::DinosaurException::DinosaurException\n142c"];
+		"142c";
+		"1430";
+	}
+	"142c"-> "1430"
+	"1430"-> "1296" [color=green]
+	"1430"-> "ffffffffffffffff" [color=green]
+
+	 subgraph cluster_7 { 
+		 label="dinosaur::DinosaurException::~DinosaurException"; 
+		 color=blue;
+		"143c" [shape=box]
+		"143c" [label = "dinosaur::DinosaurException::~DinosaurException\n143c"];
+		"143c";
+		"1440";
+	}
+	"143c"-> "1440"
+	"1440"-> "ffffffffffffffff" [color=green]
+
+}
