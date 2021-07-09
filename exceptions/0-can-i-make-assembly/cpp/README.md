@@ -654,7 +654,8 @@ Call frame information section [18] '.eh_frame' at offset 0x2038:
  [    b0] Zero terminator
 ```
 
-How do we read that GNU_EN_FRAME section, and is that where we see the exception defined?
+How do we read that GNU_EN_FRAME section, and is that where we see the exception defined? Maybe we can further
+read into the CIE pointers (Call Information Entry?)
 
 # Questions:
 
