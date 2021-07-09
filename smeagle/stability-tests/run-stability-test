@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+
+import argparse
+import shutil
+import logging
+import tempfile
+import jsonschema
+import os
+import re
+import json
+import calendar
+import subprocess
+import time
+import shutil
+import sys
+import yaml
+
+from dataclasses import dataclass
+
+logging.basicConfig(level=logging.INFO)
+
+# We want the root
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+def read_yaml(filename):
+    with open(filename, "r") as fd:
+        content = yaml.load(fd, Loader=yaml.FullLoader)
+    return content
+
+
+def write_file(content, filename):
+    with open(filename, "w") as fd:
+        fd.write(content)
+
+
+@dataclass
+class Interface:
+    """An interface currently mostly refers to a function
+    """
+
+    InterfaceName: str
+    InterfaceType: str
+    Name: str = None
+    Type: str = None
+    Location: str = None
+    Direction: str = None
+
+
+class StabilityTest:
+    """
+    Determine if two libraries A and B are stable, meaning library B can
+    replace library A
+    """
+
+    def __init__(self, A, B):
+        self.A = A
+        self.B = B
+
+    def is_compatible(self):
+        """
+        Determine if the libraries are compatible
+        """
+        self.check_exported_subset()
+        self.check_imported_subset()
+
+    def check_exported_subset(self):
+        """
+        Check for overlap of exported interfaces
+        """
+        missing = self._check_subset(self.A.Exported, self.B.Exported)
+        self._print_check("Checking if Exported({A}) ⊆ Exported({B})", missing)
+
+    def _print_check(self, message, missing):
+        """
+        Print missing imports or exports to the terminal
+        """
+        # None missing == one is a subset of the other (yes), missing == not a subset (no)
+        status = "no" if missing else "yes"
+        logging.info("%s: %s" % (message, status))
+        if missing:
+            for m in missing:
+                print(m)
+            print()
+
+    def check_imported_subset(self):
+        """
+        Check for overlap of imported interfaces
+        """
+        # This isn't entirely correct - needs to be U Exported(Dependencies(B))
+        missing = self._check_subset(self.B.Imported, self.A.Imported)
+        self._print_check("Checking if Imported({B}) ⊆ Imported({A})", missing)
+
+    def _check_subset(self, A, B):
+        """
+        Common function to compare two lists.
+        
+        The A and B might not be relevant, but should be provided in the
+        correct order to the function.
+        """
+        missing_in_b = []
+        for iface in A:
+            if iface not in B:
+                missing_in_b.append(iface)
+        return missing_in_b
+
+
+class Library:
+    def __init__(self, yaml_file):
+        if not os.path.exists(yaml_file):
+            sys.exit("%s does not exist" % yaml_file)
+        self.data = read_yaml(yaml_file)
+        self.Imported = []
+        self.Exported = []
+        self.yaml_file = os.path.abspath(yaml_file)
+        self.parse()
+
+    def __str__(self):
+        return os.path.basename(self.yaml_file)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def parse(self):
+        """
+        Parse interface entries (e.g., functions) into appropriate attributes.
+        """
+        for entry in self.data.get("locations", {}):
+            for interface_type, data in entry.items():
+
+                # Create interface entries for each parameter. This will skip
+                # functions that don't have any parameters - we might want
+                # to account for those in the model.
+                params = data.get("parameters")
+                if not params:
+                    continue
+
+                for param in params:
+                    direction = param.get("direction")
+
+                    # We can't include anything in the model without a direction
+                    if not direction or direction not in ["import", "export"]:
+                        continue
+
+                    # The set to add to depending on the direction
+                    group = getattr(self, "%sed" % direction.capitalize())
+                    group.append(
+                        Interface(
+                            data["name"],
+                            interface_type,
+                            param["name"],
+                            param["type"],
+                            param["location"],
+                            direction,
+                        )
+                    )
+
+    def Dependencies(self):
+        """We currently don't have a representation of dependencies in Smeagle
+        Let Dependencies(Bin) be the set of binaries that binary Bin depends on.
+        """
+        return set()
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(description="Smeagle Stability Test")
+
+    description = "actions for Smeagle stability test"
+    subparsers = parser.add_subparsers(
+        help="run-tests actions",
+        title="actions",
+        description=description,
+        dest="command",
+    )
+
+    # Run a complete test, which includes building the test container
+    test = subparsers.add_parser("test", help="test two libraries for compatibility")
+    test.add_argument("inputs", help="inputs to run", nargs=2)
+    return parser
+
+
+def main():
+    """
+    Entrypoint for running stability test.
+    """
+    parser = get_parser()
+
+    def help(return_code=0):
+        parser.print_help()
+        sys.exit(return_code)
+
+    # If an error occurs while parsing the arguments, the interpreter will exit with value 2
+    args, extra = parser.parse_known_args()
+    if not args.command:
+        help()
+
+    libA = Library(args.inputs[0])
+    libB = Library(args.inputs[1])
+
+    # Determine if B can safely replace A
+    test = StabilityTest(A=libA, B=libB)
+    test.is_compatible()
+
+
+if __name__ == "__main__":
+    main()
