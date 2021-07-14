@@ -29,8 +29,7 @@ README.md  libmath-v1.so.lp  libmath-v2.so.lp  stability.lp
 And run the program as follows:
 
 ```bash
-# clingo --out-ifs=\\n stability.lp libmath-v1.so.lp libmath-v2.so.lp 
-root@daba0be7bb71:/code# clingo --out-ifs=\\n stability.lp libmath-v1.so.lp libmath-v2.so.lp 
+root@b02571d443be:/code# clingo --out-ifs=\\n stability.lp libmath-v1.so.lp libmath-v2.so.lp
 clingo version 5.5.0
 Reading from stability.lp ...
 Solving...
@@ -63,28 +62,36 @@ imported_B("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm0")
 imported_B("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm1")
 imported_B("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm0")
 imported_B("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm1")
-isA("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm0","import")
-isA("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm1","import")
-isA("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm0","import")
-isA("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm1","import")
-isA("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm0","import")
-isA("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm1","import")
-isA("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm0","import")
-isA("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm1","import")
-isB("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm0","import")
-isB("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm1","import")
-isB("_ZN11MathLibrary10Arithmetic3AddEii","Integer32","%rdi","import")
-isB("_ZN11MathLibrary10Arithmetic3AddEii","Integer32","%rsi","import")
-isB("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm0","import")
-isB("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm1","import")
-isB("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm0","import")
-isB("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm1","import")
+missing_imports("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm0")
+missing_imports("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm1")
+is_a("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm0","import")
+is_a("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm1","import")
+is_a("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm0","import")
+is_a("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm1","import")
+is_a("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm0","import")
+is_a("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm1","import")
+is_a("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm0","import")
+is_a("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm1","import")
+is_b("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm0","import")
+is_b("_ZN11MathLibrary10Arithmetic8SubtractEdd","Float64","%xmm1","import")
+is_b("_ZN11MathLibrary10Arithmetic3AddEii","Integer32","%rdi","import")
+is_b("_ZN11MathLibrary10Arithmetic3AddEii","Integer32","%rsi","import")
+is_b("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm0","import")
+is_b("_ZN11MathLibrary10Arithmetic6DivideEdd","Float64","%xmm1","import")
+is_b("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm0","import")
+is_b("_ZN11MathLibrary10Arithmetic8MultiplyEdd","Float64","%xmm1","import")
 SATISFIABLE
 
 Models       : 1
 Calls        : 1
-Time         : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
-CPU Time     : 0.001s
+Time         : 0.002s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time     : 0.002s
 ```
 
-Everything I've tried tells me symbols are unsafe, so that's as far as I got.
+The facts that we care about (for now) are the missing imports and exports:
+
+```bash
+missing_imports("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm0")
+missing_imports("_ZN11MathLibrary10Arithmetic3AddEdd","Float64","%xmm1")
+```
+The model assumes that the metadata (symbol, type, register) must match.
