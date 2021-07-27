@@ -205,7 +205,7 @@ _Z19catch_the_exceptionv:
 
 ## The GCC Except Table
 
-I'm breaking it here because the gcc_except_table is what we want to look at. The table is produced [here](https://github.com/gcc-mirror/gcc/blob/16e2427f50c208dfe07d07f18009969502c25dc8/gcc/except.c#L3013) and parsed [here](https://github.com/gcc-mirror/gcc/blob/16e2427f50c208dfe07d07f18009969502c25dc8/libstdc%2B%2B-v3/libsupc%2B%2B/eh_personality.cc#L49).
+I'm breaking it here because the gcc_except_table is what we want to look at. The table is produced [here](https://github.com/gcc-mirror/gcc/blob/16e2427f50c208dfe07d07f18009969502c25dc8/gcc/except.c#L3013) and parsed [here](https://github.com/gcc-mirror/gcc/blob/16e2427f50c208dfe07d07f18009969502c25dc8/libstdc%2B%2B-v3/libsupc%2B%2B/eh_personality.cc#L49). I found [this blog post](https://martin.uy/blog/understanding-the-gcc_except_table-section-in-elf-binaries-gcc/) very helpful.
 
 - *lp_format*: tells the format of landing pad pointers (exception handlers) in the section. These pointers are offsets relative to a base "@LPStart" that is always DW_EH_PE_omit in GCC, which means that @LPStart is the start of the function.
 - *tt_format*: is DWARF encoding for entries in the Types Table @TType. This is useful because handlers can filter by exception types. There might be some types used [here](https://github.com/gcc-mirror/gcc/blob/1562c7987be115311a75b1074c3768a1b006adb6/gcc/coretypes.h#L230)?
