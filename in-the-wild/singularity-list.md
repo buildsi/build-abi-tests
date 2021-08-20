@@ -53,6 +53,8 @@ on [ompi container versioning](https://github.com/open-mpi/ompi/wiki/Container-V
 - [No openfabrics](https://groups.google.com/a/lbl.gov/g/singularity/c/GmVgOWz5lLY)
 - [Rpmi](https://groups.google.com/a/lbl.gov/g/singularity/c/r2uQfME7esQ)
 
+This is a nice post from [Reid @ LANL](https://reidpr.gitlab.io/best-practices/new-stuff.html#mpi-issues) that summarizes different MPI strategies.
+
 ## Cannot find ld
 
 - [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/aW_-Bcf__hw)
