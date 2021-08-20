@@ -3,6 +3,20 @@
 These are notes from the Singularity list that either include details or general
 descriptions of issues that might be related to ABI compatibility.
 
+## OpenBLAS shared library not used
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/HDnWX-gHa5w)
+
+This looks like the compiled library in the container was not being used, and the solution
+was to replace it with another library. This seems like something Smeagle should be able to detect,
+only given that the library symbols are required/needed and not found.
+
+## Missing Bind Path
+
+Can we tell if something that needs to be bound is missing?
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/hHe8crgc42k)
+
 ## Singularity and OpenMPI
 
 This is going to include a bunch of different threads, as it was a common problem
@@ -10,11 +24,55 @@ This is going to include a bunch of different threads, as it was a common proble
 [singularity 2.1/2.2 and OpenMPI 3.0.0a1](https://groups.google.com/a/lbl.gov/g/singularity/c/_4nvPJ_YF2Y)
 [centos 6 and OpenMPI](https://groups.google.com/a/lbl.gov/g/singularity/c/5l6ChRTg1Mk): openssh dependency problem?
 [general notes on using mpi](https://groups.google.com/a/lbl.gov/g/singularity/c/IKXSGrgSEzk)
-[An error occurred on MPI_Init on a NULL communicator, MPI_ERRORS_ARE_FATAL](https://groups.google.com/a/lbl.gov/g/singularity/c/VcXQMtghTyI) and again [here](https://groups.google.com/a/lbl.gov/g/singularity/c/5xmZOnPiZ4c)
+[An error occurred on MPI_Init on a NULL communicator, MPI_ERRORS_ARE_FATAL](https://groups.google.com/a/lbl.gov/g/singularity/c/VcXQMtghTyI)
+ - Again [here](https://groups.google.com/a/lbl.gov/g/singularity/c/5xmZOnPiZ4c)
+ - and again [here](https://groups.google.com/a/lbl.gov/g/singularity/c/jvZQx5HGvkY)
+ - and again [here](https://groups.google.com/a/lbl.gov/g/singularity/c/k2jPS2-_XBA)
 [Suggestion to embed specifics in "header"](https://groups.google.com/a/lbl.gov/g/singularity/c/0n6tps7OEro)
 [Different versions](https://groups.google.com/a/lbl.gov/g/singularity/c/Afid1CB1k8g)
+[Slurm and PMIx](https://groups.google.com/a/lbl.gov/g/singularity/c/EaqG0IEExN0)
+[Fluent and MPI](https://groups.google.com/a/lbl.gov/g/singularity/c/HUsZF9_B29c)
+[Singularity with OpenMPI 2.1/Centos 7, issue with GPFS linking](https://groups.google.com/a/lbl.gov/g/singularity/c/Zy0GPvzBsUI)
+
+## General MPI
+
+- This [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/50AhKYYQZVc) has a few useful links to examples and documentation
+on [ompi container versioning](https://github.com/open-mpi/ompi/wiki/Container-Versioning).
+- [libfabric or ucx](https://groups.google.com/a/lbl.gov/g/singularity/c/GkI_80XysD4) could be useful to test.
+
+## OpenGL
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/F1mMAU2ex9M): lots of `LD_PRELOAD` things... cannot be loaded!
+[OpenGL rendering using Nvidia gpus and EGL libs](https://groups.google.com/a/lbl.gov/g/singularity/c/7Q2AcgZnvUA)
+
+
+## Star-CMM
+
+This seems to be an MPI issue, but not necessarily OpenMPI.
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/Au4M4cHGtTc)
+
+## Performance Differences
+
+These may not be considered ABI breaks, but if performance is significantly different we might want to label these as "soft" ABI issues.
+
+[SGEMM and DGEMM drop in performance](https://groups.google.com/a/lbl.gov/g/singularity/c/KmteMm3h9S4)
+
+## Singularity and Infiniband
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/pbSfJVS8qj4)
+
+We could try with and without the internal needed libraries, and we'd want to 1. be able to predict that the container won't work, and 2. tell the user what is needed to make it work.
+
+## Networking
+
+At runtime, we can probably deduce what ports are exposed, and which are running some service in the container. So if we have an application that expects something to run on a port, maybe there is a way to check this? The stupidest way to do it is to run the thing, check if the port is viewable by the host, and if not do further inspection in the container. More detailed looking would probably mean looking at networks in the container or even trying to statically discover and parse config files. Of course
+this would work for only config files that we can figure out the paths for, but it's an idea.
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/znwthR5K0dA)
 
 ## Targeted Binaries
+
 
 [thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/iWOx9PMvPzo) (not directly related but I mention it to debug)
 [thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/RwhVjKDb3VM) this exact issue with numpy import
@@ -43,6 +101,12 @@ It looks like there was some issue with a missing symbol:
 sexec.c:455: error: 'MS_SLAVE' undeclared (first use in this function) 
 ```
 
+## PR_SET_NO_NEW_PRIVS
+
+This looks like something adding to the kernel in RHEL after 6. It probably is more a container run time issue than an ABI one we can predict beforehand, and less about software in the container and more about the container technology and host/kernel.
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/PCCS2qCFjF4)
+
 ## Nemo benchmark (MPI PMI-2 job) with slurm 16.05 and pmi2
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/vjCZoR8VbXk)
@@ -51,7 +115,8 @@ This one is interesting because it seems to work running locally, but not with s
 
 ## Overlayfs
 
-[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/IpXLwNBTDpg)
+[thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/IpXLwNBTDpg)
+[thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/YLP-gkiji80): kernel that doesn't support it.
 
 It was historically a common issue that binds in the container need to be created beforehand, given that there wasn't overlayfs. I think it's more common to have this now,
 but it would still be nice to have a way to check before doing it.
@@ -78,6 +143,7 @@ This looks like an issue with Singularity 2.x and an older kernel.
 ## Kernel and RHEL issues
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/7zYFRGtkq88)
+[container built centos 7 cannot run centos 5](https://groups.google.com/a/lbl.gov/g/singularity/c/uBWTYJIvWFg)
 
 ## Containers build with different container tech than on host
 
@@ -90,6 +156,7 @@ the host (another layer it seems).
 ## Container cannot find GPU
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/CezfXNjLGe0)
+[caffee-nv benchmark](https://groups.google.com/a/lbl.gov/g/singularity/c/Clm4pL6UyPI) could be useful to compare in different scenarios
 
 ## Incompatibility with CUDA
 
