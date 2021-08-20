@@ -21,6 +21,9 @@ Can we tell if something that needs to be bound is missing?
 
 This is going to include a bunch of different threads, as it was a common problem
 
+[OpenMPI, SLURM, and portability](https://groups.google.com/a/lbl.gov/g/singularity/c/lQ6sWCWhIWY)
+[Singularity, OpenMPI and SLURM](https://groups.google.com/a/lbl.gov/g/singularity/c/MXB3iVbLe2Q)
+[Same as above, but focus on performance costs](https://groups.google.com/a/lbl.gov/g/singularity/c/5HlJ6aQUtoI)
 [singularity 2.1/2.2 and OpenMPI 3.0.0a1](https://groups.google.com/a/lbl.gov/g/singularity/c/_4nvPJ_YF2Y)
 [centos 6 and OpenMPI](https://groups.google.com/a/lbl.gov/g/singularity/c/5l6ChRTg1Mk): openssh dependency problem?
 [general notes on using mpi](https://groups.google.com/a/lbl.gov/g/singularity/c/IKXSGrgSEzk)
@@ -33,18 +36,43 @@ This is going to include a bunch of different threads, as it was a common proble
 [Slurm and PMIx](https://groups.google.com/a/lbl.gov/g/singularity/c/EaqG0IEExN0)
 [Fluent and MPI](https://groups.google.com/a/lbl.gov/g/singularity/c/HUsZF9_B29c)
 [Singularity with OpenMPI 2.1/Centos 7, issue with GPFS linking](https://groups.google.com/a/lbl.gov/g/singularity/c/Zy0GPvzBsUI)
+[NAS Parallal Benchark fail](https://groups.google.com/a/lbl.gov/g/singularity/c/MCUQLVUFixc)
+[OpenFoam](https://groups.google.com/a/lbl.gov/g/singularity/c/hKgAbfSZCaY)
 
 ## General MPI
 
 - This [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/50AhKYYQZVc) has a few useful links to examples and documentation
 on [ompi container versioning](https://github.com/open-mpi/ompi/wiki/Container-Versioning).
 - [libfabric or ucx](https://groups.google.com/a/lbl.gov/g/singularity/c/GkI_80XysD4) could be useful to test.
+- [MVAPICH](https://groups.google.com/a/lbl.gov/g/singularity/c/A6I5mZxnmFU) and [another](https://groups.google.com/a/lbl.gov/g/singularity/c/X3TEGPnGuO8)
+- [MPIRUN or srun](https://groups.google.com/a/lbl.gov/g/singularity/c/MqYqJVe3fH4) and reference to Charliecloud
+- [Parallel Python](https://groups.google.com/a/lbl.gov/g/singularity/c/G0L0QC2Bleg)
+- [MPI 2019](https://groups.google.com/a/lbl.gov/g/singularity/c/e91Wl95M0pM)
+- [Segfault on upgrade](https://groups.google.com/a/lbl.gov/g/singularity/c/-yV29brRsgM)
+- [CodeAster](https://groups.google.com/a/lbl.gov/g/singularity/c/XgerHAiCzYk)
+- [No openfabrics](https://groups.google.com/a/lbl.gov/g/singularity/c/GmVgOWz5lLY)
+- [Rpmi](https://groups.google.com/a/lbl.gov/g/singularity/c/r2uQfME7esQ)
+
+## Cannot find ld
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/aW_-Bcf__hw)
+
+I know this is an issue on alpine, but not sure if that's relevant here. Either way, it's needed and not found.
+
+## MPICH
+
+[MPICH using LD_AUDIT](https://github.com/hpcng/singularity/issues/876) (GitHub issue)
+
+## Intel MPI
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/rhjVSVxR6G0)
 
 ## OpenGL
 
-[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/F1mMAU2ex9M): lots of `LD_PRELOAD` things... cannot be loaded!
+[thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/F1mMAU2ex9M): lots of `LD_PRELOAD` things... cannot be loaded!
 [OpenGL rendering using Nvidia gpus and EGL libs](https://groups.google.com/a/lbl.gov/g/singularity/c/7Q2AcgZnvUA)
-
+[Cannot find system OpenGL Library](https://groups.google.com/a/lbl.gov/g/singularity/c/BNJfEbcDBvA)
+[thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/wK4MliObr-Q)
 
 ## Star-CMM
 
@@ -60,9 +88,24 @@ These may not be considered ABI breaks, but if performance is significantly diff
 
 ## Singularity and Infiniband
 
-[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/pbSfJVS8qj4)
+[thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/pbSfJVS8qj4)
+[thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/xUYb2v2iaKY)
+[thread 3](https://groups.google.com/a/lbl.gov/g/singularity/c/21XzcYuJ63Q)
+[thread 4](https://groups.google.com/a/lbl.gov/g/singularity/c/4Ce8oCOPKlI)
 
 We could try with and without the internal needed libraries, and we'd want to 1. be able to predict that the container won't work, and 2. tell the user what is needed to make it work.
+
+## Instruction Sets
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/fGfrdzawGEA)
+
+This user built the container on a processor that supports SSE4 and then expects it doesn't work on SSE2.
+
+## ProbtrackX
+
+[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/9aZa0tKdEKI)
+
+This is a classic "cannot find this library" that should be detectable by Smeagle if symbols are missing.
 
 ## Networking
 
@@ -105,7 +148,8 @@ sexec.c:455: error: 'MS_SLAVE' undeclared (first use in this function)
 
 This looks like something adding to the kernel in RHEL after 6. It probably is more a container run time issue than an ABI one we can predict beforehand, and less about software in the container and more about the container technology and host/kernel.
 
-[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/PCCS2qCFjF4)
+[thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/PCCS2qCFjF4)
+[thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/fa2GMFG9iTY)
 
 ## Nemo benchmark (MPI PMI-2 job) with slurm 16.05 and pmi2
 
@@ -130,6 +174,7 @@ E.g., installing scientific linux with singularity it fails because xz compressi
 ## Audio / Video Drivers
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/n5ks7C3AD-g)
+[NGC pytorch needing display (not found)](https://groups.google.com/a/lbl.gov/g/singularity/c/SASPAdPt2Jc)
 
 Perhaps some test related to compatibility of these drivers?
 
@@ -144,6 +189,8 @@ This looks like an issue with Singularity 2.x and an older kernel.
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/7zYFRGtkq88)
 [container built centos 7 cannot run centos 5](https://groups.google.com/a/lbl.gov/g/singularity/c/uBWTYJIvWFg)
+[build fails as SGE job centos upgrade](https://groups.google.com/a/lbl.gov/g/singularity/c/X6Q-IsNQh-k)
+[fake Kernel inside container](https://github.com/hpcng/singularity/issues/4109) (GitHub issue)
 
 ## Containers build with different container tech than on host
 
@@ -157,10 +204,21 @@ the host (another layer it seems).
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/CezfXNjLGe0)
 [caffee-nv benchmark](https://groups.google.com/a/lbl.gov/g/singularity/c/Clm4pL6UyPI) could be useful to compare in different scenarios
+[TRINITY (bioinformatics)](https://groups.google.com/a/lbl.gov/g/singularity/c/m9_JEOTQRC0)
+[libGL error, failed to load swrast driver](https://groups.google.com/a/lbl.gov/g/singularity/c/jkR9I7tET7w)
+[NVIDIA-SMI](https://groups.google.com/a/lbl.gov/g/singularity/c/b4VSGzyIulc)
+
+## Filesystems
+
+[segfault with NFS](https://groups.google.com/a/lbl.gov/g/singularity/c/3e1iRMBeP60)
 
 ## Incompatibility with CUDA
 
-[thread](https://groups.google.com/a/lbl.gov/g/singularity/c/VFY-uAZlHr8)
+[thread 1](https://groups.google.com/a/lbl.gov/g/singularity/c/VFY-uAZlHr8)
+[CUDA_ERROR_UNKNOWN](https://groups.google.com/a/lbl.gov/g/singularity/c/CQvDbqiZv4U)
+[thread 2](https://groups.google.com/a/lbl.gov/g/singularity/c/iU8xH8ybBAE)
+[tensorflow](https://groups.google.com/a/lbl.gov/g/singularity/c/Isg2Pledkuw)
+[performance issue with GPU](https://groups.google.com/a/lbl.gov/g/singularity/c/3zns60lZlL0)
 
 And
 
@@ -185,6 +243,7 @@ _why is it always time zones..._
 ## vsyscall=emulate required to use centos6
 
 [thread](https://groups.google.com/a/lbl.gov/g/singularity/c/PWv0HeuZKN8)
+[GitHub issue](https://github.com/hpcng/singularity/issues/845)
 
 ## Recompiled on Broadwell
 
