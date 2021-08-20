@@ -191,6 +191,7 @@ This looks like an issue with Singularity 2.x and an older kernel.
 [container built centos 7 cannot run centos 5](https://groups.google.com/a/lbl.gov/g/singularity/c/uBWTYJIvWFg)
 [build fails as SGE job centos upgrade](https://groups.google.com/a/lbl.gov/g/singularity/c/X6Q-IsNQh-k)
 [fake Kernel inside container](https://github.com/hpcng/singularity/issues/4109) (GitHub issue)
+[kernel to old](https://github.com/hpcng/singularity/issues/1275) (GitHub issue)
 
 ## Containers build with different container tech than on host
 
