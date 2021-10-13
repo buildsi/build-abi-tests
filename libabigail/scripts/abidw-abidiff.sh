@@ -11,13 +11,13 @@ if [ -z "$FLUX_URI" ];then
 fi
 
 find $1 -type f -name "*.so.*" ! -name "*hmac" | while read lib;do
+    #if it
     rpm -qf $lib >/dev/null
     if [ $? != 0 ] ;then
-	continue;
+	eu-elfclassify --unstripped $lib
+	if [ $? != 0 ];then
+	    continue
+	fi
     fi
-#    eu-elfclassify --unstripped $lib
-#    if [ $? != 0 ];then
-#	continue
-#    fi
     echo $lib
 done | flux mini bulksubmit --wait --progress --job-name=abidw1 --output={./}.out abidw --abidiff {}
