@@ -2,5 +2,9 @@
 
 extern int do_something( int num){
   num=num+2;
-  throw LongExceptionName(num);
+  if(num!=18)
+    throw LongExceptionName(num);
+  else
+    throw ShorterExceptionName();
+  return num;
 }

@@ -14,4 +14,6 @@ public:
 };
 #endif
 
+class ShorterExceptionName {};
+
 int do_something( int num);
