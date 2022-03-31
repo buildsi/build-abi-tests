@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -n "exception swap test "
+echo -n "exception swap test: "
 export SWAP_LIB_FILENAME=libswapfile
 echo librttiexcep_v1.so librttiexcep_v2.so > $SWAP_LIB_FILENAME
 
