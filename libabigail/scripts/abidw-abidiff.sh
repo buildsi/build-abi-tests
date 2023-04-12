@@ -1,5 +1,7 @@
 #!/bin/bash
 
+unset DEBUGINFOD_PROGRESS
+
 if [ -z "$1" ];then
     echo Forgat path!
     exit 1
